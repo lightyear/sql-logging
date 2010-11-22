@@ -1,0 +1,69 @@
+= SQL Logging
+
+The SQL Logging gem adds useful SQL debugging tools to ActiveRecord. The gem
+is a repackaging of the old SQL Logging plug-in for Rails 2.x. It, in turn,
+was based on ideas and plug-ins from Adam Doppelt's (standard logging
+enhancements) and Nathaniel Talbott (the QueryTrace plug-in).
+
+This gem is for Rails 3 only. It supports MySQL (including the mysql2 gem),
+PostgreSQL and SQLite.
+
+== Usage
+
+Once installed, the out-of-the-box behavior gives you:
+
+* A cleaned-up backtrace after every SQL query, so you know exactly what
+  piece of code triggered the query.
+* A report of the number of rows and rough count of bytes returned after
+  each query.
+* After each request completes, additional summary information telling you
+  the number of statements executed, as well as a rough total number of
+  bytes received from the database.
+* A top 10 list of SQL executions, sorted by total execution time (based on
+  the location of the query in code), including the total number of rows
+  and bytes returned over all executions.
+
+All of this additional information is logged at DEBUG level, so it won't
+clutter up your production log files.
+
+== Options
+
+The Top 10 summary provides the most options to customize its behavior.
+
+If you want more or fewer than 10 queries, you can easily change that:
+
+  SqlLogging::Statistics.top_sql_queries = 5
+
+If you want the sorted by something other than the total execution time,
+you can instead sort by the median execution time, number of executions
+or rows/bytes returned over all executions of the query:
+
+  SqlLogging::Statistics.show_top_sql_queries = :median_time
+  SqlLogging::Statistics.show_top_sql_queries = :queries
+  SqlLogging::Statistics.show_top_sql_queries = :rows
+  SqlLogging::Statistics.show_top_sql_queries = :bytes
+
+You can also turn the list off entirely:
+
+  SqlLogging::Statistics.show_top_sql_queries = false
+
+If you don't want to see query backtraces:
+
+  SqlLogging::Statistics.show_sql_backtrace = false
+
+= Acknowledgments
+
+Adam's post describing his logging improvements is at
+http://gurge.com/blog/2006/11/09/rails-sql-logging-improvements/.
+
+Nathaniel's QueryTrace is available at
+http://terralien.com/projects/querytrace/.
+
+= Contact
+
+Feedback and/or patches to make this gem better are greatly appreciated!
+
+Steve Madsen
+Light Year Software, LLC
+http://lightyearsoftware.com
+steve@lightyearsoftware.com
