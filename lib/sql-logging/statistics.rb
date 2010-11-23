@@ -81,7 +81,7 @@ module SqlLogging
     def self.log_report
       Rails.logger.debug "SQL Logging: #{helper.pluralize(@@queries, 'statement')} executed, returning #{helper.number_to_human_size(@@bytes)}"
     
-      unless @@show_top_sql_queries == false
+      unless @@show_top_sql_queries == false || @@top_queries.empty?
         Rails.logger.debug "Top #{@@top_sql_queries} SQL executions:"
         sorted_keys = @@top_queries.keys.sort_by { |k| @@top_queries[k][@@show_top_sql_queries] }.reverse
         sorted_keys.slice(0..@@top_sql_queries).each do |key|
