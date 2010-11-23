@@ -26,6 +26,9 @@ module SqlLogging
       @@show_top_sql_queries = value
     end
 
+    @@queries = @@bytes = @@rows = 0
+    @@top_queries = {}
+
     def self.reset_statistics!
       @@queries = @@bytes = @@rows = 0
       @@top_queries = {}
