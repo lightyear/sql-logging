@@ -20,14 +20,22 @@ class LoggedQuery
   
   def [](key)
     case key.to_sym
-    when :sql: @sql
-    when :name: @name
-    when :backtrace: @backtrace
-    when :queries: @queries
-    when :rows: @rows
-    when :bytes: @bytes
-    when :median_time: median_time
-    when :total_time: total_time
+    when :sql
+      @sql
+    when :name
+      @name
+    when :backtrace
+      @backtrace
+    when :queries
+      @queries
+    when :rows
+      @rows
+    when :bytes
+      @bytes
+    when :median_time
+      median_time
+    when :total_time
+      total_time
     else nil
     end
   end
