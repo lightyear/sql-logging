@@ -5,7 +5,7 @@ is a repackaging of the old SQL Logging plug-in for Rails 2.x. It, in turn,
 was based on ideas and plug-ins from Adam Doppelt's (standard logging
 enhancements) and Nathaniel Talbott (the QueryTrace plug-in).
 
-This gem is for Rails 3 only. It supports MySQL (including the mysql2 gem),
+This gem is for Rails 3+ only. It supports MySQL (including the mysql2 gem),
 PostgreSQL and SQLite.
 
 == Usage
