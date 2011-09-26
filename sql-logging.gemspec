@@ -18,5 +18,5 @@ Gem::Specification.new do |s|
   s.require_path = 'lib'
   s.has_rdoc = true
   s.extra_rdoc_files = ['README.rdoc']
-  s.add_dependency('rails', '~> 3.0.0')
+  s.add_dependency('rails', '> 3.0.0')
 end
