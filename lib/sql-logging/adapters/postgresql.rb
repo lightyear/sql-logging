@@ -4,7 +4,7 @@ class ActiveRecord::ConnectionAdapters::PostgreSQLAdapter
   def execute_with_sql_logging(sql, *args)
     result = nil
     elapsed = Benchmark.measure do
-      result = execute_without_sql_logging(sql, args)
+      result = execute_without_sql_logging(sql, *args)
     end
     msec = elapsed.real * 1000
     if result.respond_to?(:rows)
