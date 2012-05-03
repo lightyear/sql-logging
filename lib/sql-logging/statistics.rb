@@ -1,3 +1,4 @@
+require 'singleton'
 require 'sql-logging/logged_query'
 
 module SqlLogging
