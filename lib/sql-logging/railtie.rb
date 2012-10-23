@@ -7,6 +7,7 @@ module SqlLogging
     initializer 'sql_logging.load_adapter_extensions' do
       ActiveSupport.on_load(:active_record, :after => 'active_record.initialize_database') do
         adapter = ActiveRecord::Base.configurations[Rails.env]['adapter']
+        require "sql-logging/adapters/cache_extension"
         begin
           require "sql-logging/adapters/#{adapter}"
         rescue LoadError => e
