@@ -6,7 +6,7 @@ was based on ideas and plug-ins from Adam Doppelt's (standard logging
 enhancements) and Nathaniel Talbott (the QueryTrace plug-in).
 
 This gem is for Rails 3+ only. It supports MySQL (including the mysql2 gem),
-PostgreSQL and SQLite.
+PostgreSQL, PostGIS, and SQLite.
 
 == Usage
 
