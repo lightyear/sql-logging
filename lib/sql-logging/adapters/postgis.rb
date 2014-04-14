@@ -1,5 +1,3 @@
-require 'active_record/connection_adapters/postgis_adapter.rb'
 require 'sql-logging/adapters/postgresql.rb'
+require 'active_record/connection_adapters/postgis_adapter.rb'
 
-class ActiveRecord::ConnectionAdapters::PostGISAdapter < ActiveRecord::ConnectionAdapters::PostgreSQLAdapter
-end
