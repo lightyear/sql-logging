@@ -34,10 +34,10 @@ module SqlLogging
       @@queries = @@bytes = @@rows = 0
       @@top_queries = {}
     end
-  
+
     @@backtrace_cleaner = Rails.backtrace_cleaner.dup
     @@backtrace_cleaner.add_silencer { |line| line =~ %r{sql-logging/lib} }
-  
+
     def self.record_query(sql, name, msec, result)
       unless name.blank? || name =~ / Columns$/ || name == :skip_logging
         bytes = 0
@@ -53,6 +53,8 @@ module SqlLogging
           ntuples = 0
           if result.respond_to?(:length)
             ntuples = result.length
+          elsif result.respond_to?(:count)
+            ntuples = result.count
           elsif result.respond_to?(:num_rows)
             ntuples = result.num_rows
           elsif result.respond_to?(:ntuples)
@@ -74,34 +76,28 @@ module SqlLogging
           query.log_query(ntuples || 0, bytes || 0, msec)
         end
 
-        Rails.logger.debug "    #{helper.pluralize(ntuples, 'row')}, #{helper.number_to_human_size(bytes)}"
+        Rails.logger.debug "    #{ntuples} rows, #{bytes} bytes"
         Rails.logger.debug "    #{backtrace}" if @@show_sql_backtrace
       end
     end
   
     def self.log_report
-      Rails.logger.debug "SQL Logging: #{helper.pluralize(@@queries, 'statement')} executed, returning #{helper.number_to_human_size(@@bytes)}"
+      Rails.logger.debug "SQL Logging: #{@@queries} statements executed, returning #{@@bytes} bytes"
     
       unless @@show_top_sql_queries == false || @@top_queries.empty?
         Rails.logger.debug "Top #{@@top_sql_queries} SQL executions:"
         sorted_keys = @@top_queries.keys.sort_by { |k| @@top_queries[k][@@show_top_sql_queries] }.reverse
         sorted_keys.slice(0..@@top_sql_queries).each do |key|
           query = @@top_queries[key]
-          Rails.logger.debug "  Executed #{helper.pluralize(query.queries, 'time')} in #{'%.1f' % query.total_time}ms " +
+          Rails.logger.debug "  Executed #{query.queries} times in #{'%.1f' % query.total_time}ms " +
             "(#{'%.1f' % query.min_time}/#{'%.1f' % query.median_time}/#{'%.1f' % query.max_time}ms min/median/max), " +
-            "returning #{helper.pluralize(query.rows, 'row')} " +
-            "(#{helper.number_to_human_size(query.bytes)}):\n" +
+            "returning #{query.rows} rows" +
+            "(#{query.bytes} bytes):\n" +
             "    #{query.name}\n" +
             "    First exec was: #{query.sql}\n" +
             "    #{query.backtrace}"
         end
       end
-    end
-  
-    protected
-  
-    def self.helper
-      Helper.instance
     end
   end
 end
