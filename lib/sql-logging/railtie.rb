@@ -15,7 +15,7 @@ module SqlLogging
         end
       end
     end
-    
+
     initializer 'sql_logging.reset_statistics' do
       ActiveSupport.on_load(:active_record) do
         ActionDispatch::Callbacks.before do

@@ -5,13 +5,9 @@ module ActiveRecord::ConnectionAdapters::QueryCache
 
   def cache_sql_with_sql_logging(sql, binds, &blk)
     if @query_cache.has_key?(sql)
-      rows = nil
-      elapsed = Benchmark.measure do
-        rows = cache_sql_without_sql_logging(sql, binds, &blk)
+      SqlLogging::Statistics.benchmark(sql, 'CACHE') do
+        cache_sql_without_sql_logging(sql, binds, &blk)
       end
-      msec = elapsed.real * 1000
-      SqlLogging::Statistics.record_query(sql, "CACHE", msec, rows)
-      rows
     else
       cache_sql_without_sql_logging(sql, binds, &blk)
     end

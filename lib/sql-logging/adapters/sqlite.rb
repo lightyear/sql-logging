@@ -1,13 +1,6 @@
-class ActiveRecord::ConnectionAdapters::SQLiteAdapter
-  def execute_with_sql_logging(sql, name = nil)
-    res = nil
-    elapsed = Benchmark.measure do
-      res = execute_without_sql_logging(sql, name)
-    end
-    msec = elapsed.real * 1000
-    SqlLogging::Statistics.record_query(sql, name, msec, res)
-    res
-  end
+require 'sql-logging/connection_adapters/generic'
+require 'active_record/connection_adapters/sqlite_adapter'
 
-  alias_method_chain :execute, :sql_logging
+class ActiveRecord::ConnectionAdapters::SQLiteAdapter
+  include SqlLogging::Adapters::Generic
 end
