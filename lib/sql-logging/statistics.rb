@@ -7,23 +7,23 @@ module SqlLogging
     include ActionView::Helpers::TextHelper
     include ActionView::Helpers::NumberHelper
   end
-  
+
   class Statistics
     @@show_sql_backtrace = true
     @@show_top_sql_queries = :total_time
     @@top_sql_queries = 10
-  
+
     cattr_accessor :show_sql_backtrace, :top_sql_queries
-  
+
     def self.show_top_sql_queries
       @@show_top_sql_queries
     end
-  
+
     def self.show_top_sql_queries=(value)
       unless [ false, :rows, :queries, :bytes, :total_time, :median_time ].include?(value)
         raise ArgumentError, "show_top_sql_queries must be one of false, :rows, :queries, :bytes, :total_time or :median_time"
       end
-    
+
       @@show_top_sql_queries = value
     end
 
@@ -37,6 +37,22 @@ module SqlLogging
 
     @@backtrace_cleaner = Rails.backtrace_cleaner.dup
     @@backtrace_cleaner.add_silencer { |line| line =~ %r{sql-logging/lib} }
+
+    def self.benchmark(sql, name, &block)
+      result = nil
+
+      elapsed = Benchmark.measure do
+        result = yield
+      end
+      msec = elapsed.real * 1000
+
+      if result.respond_to?(:rows)
+        record_query(sql, name, msec, result.rows)
+      else
+        record_query(sql, name, msec, result)
+      end
+      result
+    end
 
     def self.record_query(sql, name, msec, result)
       unless name.blank? || name =~ / Columns$/ || name == :skip_logging
@@ -61,7 +77,7 @@ module SqlLogging
             ntuples = result.ntuples
           end
         end
-      
+
         @@queries += 1
         @@rows += ntuples
         @@bytes += bytes
@@ -80,10 +96,10 @@ module SqlLogging
         Rails.logger.debug "    #{backtrace}" if @@show_sql_backtrace
       end
     end
-  
+
     def self.log_report
       Rails.logger.debug "SQL Logging: #{@@queries} statements executed, returning #{@@bytes} bytes"
-    
+
       unless @@show_top_sql_queries == false || @@top_queries.empty?
         Rails.logger.debug "Top #{@@top_sql_queries} SQL executions:"
         sorted_keys = @@top_queries.keys.sort_by { |k| @@top_queries[k][@@show_top_sql_queries] }.reverse
