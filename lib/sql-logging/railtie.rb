@@ -1,7 +1,3 @@
-require 'sql-logging/statistics'
-require 'rails'
-require 'active_record'
-
 module SqlLogging
   class Railtie < Rails::Railtie
     initializer 'sql_logging.load_adapter_extensions' do

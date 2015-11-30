@@ -1,5 +1,7 @@
 = SQL Logging
 
+{<img src="https://travis-ci.org/lightyear/sql-logging.svg?branch=master" alt="Build Status" />}[https://travis-ci.org/lightyear/sql-logging]
+
 The SQL Logging gem adds useful SQL debugging tools to ActiveRecord. The gem
 is a repackaging of the old SQL Logging plug-in for Rails 2.x. It, in turn,
 was based on ideas and plug-ins from Adam Doppelt's (standard logging

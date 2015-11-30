@@ -1,6 +1,3 @@
-require 'singleton'
-require 'sql-logging/logged_query'
-
 module SqlLogging
   class Helper
     include Singleton
