@@ -1,1 +1,10 @@
+require 'rails'
+require 'active_record'
+require 'action_view'
+require 'singleton'
+
+require 'sql-logging/version'
+require 'sql-logging/controller_runtime'
+require 'sql-logging/logged_query'
+require 'sql-logging/statistics'
 require 'sql-logging/railtie'
