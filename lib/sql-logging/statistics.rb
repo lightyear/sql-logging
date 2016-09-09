@@ -1,10 +1,4 @@
 module SqlLogging
-  class Helper
-    include Singleton
-    include ActionView::Helpers::TextHelper
-    include ActionView::Helpers::NumberHelper
-  end
-  
   class Statistics
     @@show_sql_backtrace = true
     @@show_top_sql_queries = :total_time
