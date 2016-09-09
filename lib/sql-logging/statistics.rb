@@ -1,25 +1,15 @@
 module SqlLogging
   class Statistics
-    @@show_sql_backtrace = true
-    @@show_top_sql_queries = :total_time
-    @@top_sql_queries = 10
-    @@backtrace_cleaner = nil
-
-    cattr_accessor :show_sql_backtrace, :top_sql_queries
-
-    def self.show_top_sql_queries
-      @@show_top_sql_queries
-    end
-
-    def self.show_top_sql_queries=(value)
-      unless [false, :rows, :queries, :bytes, :total_time, :median_time]
-             .include?(value)
-        raise ArgumentError, 'show_top_sql_queries must be one of false, ' \
-                             ':rows, :queries, :bytes, :total_time or ' \
-                             ':median_time'
+    class << self
+      extend Forwardable
+      def configuration
+        SqlLogging.configuration
       end
 
-      @@show_top_sql_queries = value
+      def_delegators :configuration, :show_sql_backtrace, :top_sql_queries,
+                     :show_top_sql_queries, :backtrace_cleaner,
+                     :show_top_sql_queries=, :show_sql_backtrace=,
+                     :top_sql_queries=
     end
 
     @@queries = @@bytes = @@rows = 0
@@ -28,14 +18,6 @@ module SqlLogging
     def self.reset_statistics!
       @@queries = @@bytes = @@rows = 0
       @@top_queries = {}
-    end
-
-    def self.backtrace_cleaner
-      unless @@backtrace_cleaner
-        @@backtrace_cleaner = Rails.backtrace_cleaner.dup
-        @@backtrace_cleaner.add_silencer { |line| line =~ %r{sql-logging/lib} }
-      end
-      @@backtrace_cleaner
     end
 
     def self.record_query(sql, name, msec, result)
@@ -67,7 +49,7 @@ module SqlLogging
         @@bytes += bytes
 
         backtrace = backtrace_cleaner.clean(caller).join("\n    ")
-        unless @@show_top_sql_queries == false
+        unless show_top_sql_queries
           key = "#{name}:#{backtrace}"
           unless query = @@top_queries[key]
             query = LoggedQuery.new(sql, name, backtrace)
@@ -77,7 +59,7 @@ module SqlLogging
         end
 
         Rails.logger.debug "    #{ntuples} rows, #{bytes} bytes"
-        Rails.logger.debug "    #{backtrace}" if @@show_sql_backtrace
+        Rails.logger.debug "    #{backtrace}" if show_sql_backtrace
       end
     end
 
@@ -85,24 +67,23 @@ module SqlLogging
       Rails.logger.debug "SQL Logging: #{@@queries} statements executed, " \
                          "returning #{@@bytes} bytes"
 
-      unless @@show_top_sql_queries == false || @@top_queries.empty?
-        Rails.logger.debug "Top #{@@top_sql_queries} SQL executions:"
-        sorted_keys = @@top_queries.keys.sort_by do |k|
-          @@top_queries[k][@@show_top_sql_queries]
-        end.reverse
-        sorted_keys.slice(0..@@top_sql_queries).each do |key|
-          query = @@top_queries[key]
-          Rails.logger.debug "  Executed #{query.queries} times in "\
-                             "#{'%.1f' % query.total_time}ms " \
-                             "(#{'%.1f' % query.min_time}/" \
-                             "#{'%.1f' % query.median_time}/" \
-                             "#{'%.1f' % query.max_time}ms min/median/max), " \
-                             "returning #{query.rows} rows" \
-                             "(#{query.bytes} bytes):\n" \
-                             "    #{query.name}\n" \
-                             "    First exec was: #{query.sql}\n" \
-                             "    #{query.backtrace}"
-        end
+      return if show_top_sql_queries == false || @@top_queries.empty?
+      Rails.logger.debug "Top #{top_sql_queries} SQL executions:"
+      sorted_keys = @@top_queries.keys.sort_by do |k|
+        @@top_queries[k][show_top_sql_queries]
+      end.reverse
+      sorted_keys.slice(0..top_sql_queries).each do |key|
+        query = @@top_queries[key]
+        Rails.logger.debug "  Executed #{query.queries} times in "\
+                           "#{'%.1f' % query.total_time}ms " \
+                           "(#{'%.1f' % query.min_time}/" \
+                           "#{'%.1f' % query.median_time}/" \
+                           "#{'%.1f' % query.max_time}ms min/median/max), " \
+                           "returning #{query.rows} rows" \
+                           "(#{query.bytes} bytes):\n" \
+                           "    #{query.name}\n" \
+                           "    First exec was: #{query.sql}\n" \
+                           "    #{query.backtrace}"
       end
     end
   end
