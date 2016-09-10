@@ -23,6 +23,7 @@ module SqlLogging
 
     class << self
       extend Forwardable
+
       def configuration
         SqlLogging.configuration
       end
@@ -30,27 +31,52 @@ module SqlLogging
       def_delegators :configuration, :show_sql_backtrace, :top_sql_queries,
                      :show_top_sql_queries, :backtrace_cleaner,
                      :show_top_sql_queries=, :show_sql_backtrace=,
-                     :top_sql_queries=
+                     :top_sql_queries=, :logger
 
-      @data = Data.new
+      def data
+        @data ||= Data.new
+      end
 
-      def_delegator :@data, :top_queries
+      def_delegator :data, :top_queries
 
       def reset_statistics!
-        @data.reset!
+        data.reset!
       end
 
       def record_query(sql, name, msec, result)
         return if name.blank? || name =~ / Columns$/ || name == :skip_logging
         ntuples, bytes = tuples_and_bytes_in_result(result)
 
-        @data.add_query(ntuple, bytes)
+        data.add_query(ntuples, bytes)
 
         backtrace = backtrace_cleaner.clean(caller).join("\n    ")
         add_query_to_top_queries(sql, name, backtrace, msec, ntuples, bytes)
 
-        Rails.logger.debug "    #{ntuples} rows, #{bytes} bytes"
-        Rails.logger.debug "    #{backtrace}" if show_sql_backtrace
+        logger.debug "    #{ntuples} rows, #{bytes} bytes"
+        logger.debug "    #{backtrace}" if show_sql_backtrace
+      end
+
+      def log_report
+        logger.debug "SQL Logging: #{data.queries} statements executed" \
+          ", returning #{data.bytes} bytes"
+
+        return unless top_queries?
+        logger.debug "Top #{top_sql_queries} SQL executions:"
+        sorted_keys = top_queries.keys.sort_by do |k|
+          top_queries[k][show_top_sql_queries]
+        end.reverse
+        sorted_keys.slice(0..top_sql_queries).each do |key|
+          query = top_queries[key]
+          logger.debug format(
+            '  Executed %d times in %.1fms (%.1f/%.1f/%.1fms min/median/max),' \
+            " returning %d rows(%d bytes):\n"\
+            "    %s\n" \
+            "    First exec was: %s\n" \
+            '    %s', query.queries, query.total_time, query.min_time,
+            query.median_time, query.max_time, query.rows, query.bytes,
+            query.name, query.sql, query.backtrace
+          )
+        end
       end
 
       private
@@ -86,31 +112,7 @@ module SqlLogging
         [ntuples, bytes]
       end
 
-      def log_report
-        Rails.logger.debug "SQL Logging: #{@data.queries} statements executed" \
-          ", returning #{@data.bytes} bytes"
-
-        return unless have_top_queries?
-        Rails.logger.debug "Top #{top_sql_queries} SQL executions:"
-        sorted_keys = top_queries.keys.sort_by do |k|
-          top_queries[k][show_top_sql_queries]
-        end.reverse
-        sorted_keys.slice(0..top_sql_queries).each do |key|
-          query = top_queries[key]
-          Rails.logger.debug "  Executed #{query.queries} times in "\
-                             "#{'%.1f' % query.total_time}ms " \
-                             "(#{'%.1f' % query.min_time}/" \
-                             "#{'%.1f' % query.median_time}/" \
-                             "#{'%.1f' % query.max_time}ms min/median/max), " \
-                             "returning #{query.rows} rows" \
-                             "(#{query.bytes} bytes):\n" \
-                             "    #{query.name}\n" \
-                             "    First exec was: #{query.sql}\n" \
-                             "    #{query.backtrace}"
-        end
-      end
-
-      def have_top_queries?
+      def top_queries?
         show_top_sql_queries && !top_queries.empty?
       end
     end

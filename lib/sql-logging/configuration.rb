@@ -5,7 +5,8 @@ module SqlLogging
       show_sql_backtrace: true,
       show_top_sql_queries: :total_time,
       top_sql_queries: 10,
-      backtrace_cleaner: nil
+      backtrace_cleaner: nil,
+      logger: nil
     }.freeze
 
     attr_writer(*DEFAULTS.keys - [:show_top_sql_queries=])
@@ -25,6 +26,10 @@ module SqlLogging
 
     def backtrace_cleaner
       @backtrace_cleaner ||= initialize_cleaner
+    end
+
+    def logger
+      @logger ||= Rails.logger
     end
 
     private
