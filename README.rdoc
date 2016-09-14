@@ -34,24 +34,38 @@ The Top 10 summary provides the most options to customize its behavior.
 
 If you want more or fewer than 10 queries, you can easily change that:
 
-  SqlLogging::Statistics.top_sql_queries = 5
+  SqlLogging.configuration.top_sql_queries = 5
 
 If you want the sorted by something other than the total execution time,
 you can instead sort by the median execution time, number of executions
 or rows/bytes returned over all executions of the query:
 
-  SqlLogging::Statistics.show_top_sql_queries = :median_time
-  SqlLogging::Statistics.show_top_sql_queries = :queries
-  SqlLogging::Statistics.show_top_sql_queries = :rows
-  SqlLogging::Statistics.show_top_sql_queries = :bytes
+  SqlLogging.configuration.show_top_sql_queries = :median_time
+  SqlLogging.configuration.show_top_sql_queries = :queries
+  SqlLogging.configuration.show_top_sql_queries = :rows
+  SqlLogging.configuration.show_top_sql_queries = :bytes
 
 You can also turn the list off entirely:
 
-  SqlLogging::Statistics.show_top_sql_queries = false
+  SqlLogging.configuration.show_top_sql_queries = false
 
 If you don't want to see query backtraces:
 
-  SqlLogging::Statistics.show_sql_backtrace = false
+  SqlLogging.configuration.show_sql_backtrace = false
+
+=== General Configuration
+
+In addition to the statistics configuration, more general aspects of the gem can
+be set through the configuration.
+
+For example, the logger can be set here to store results in alternate location:
+
+  SqlLogging.configuration.logger = ActiveSupport::Logger.new(STDOUT)
+
+Additionally, the backtrace cleaner used for generating the call stack can be
+configured here:
+
+  SqlLogging.configuration.backtrace_cleaner.remove_silencers!
 
 = Acknowledgments
 
