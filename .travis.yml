@@ -10,6 +10,7 @@ gemfile:
   - Gemfile.rails41
   - Gemfile.rails42
   - Gemfile.rails50
+  - Gemfile.rails51
 
 matrix:
   exclude:
