@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 module SqlLogging
   class Configuration
     DEFAULTS = {
@@ -9,7 +10,7 @@ module SqlLogging
       logger: nil
     }.freeze
 
-    attr_writer(*DEFAULTS.keys - [:show_top_sql_queries=])
+    attr_writer(*DEFAULTS.keys - [:show_top_sql_queries])
     attr_reader(*DEFAULTS.keys - %i(logger backtrace_cleaner))
 
     def initialize

@@ -1,3 +1,5 @@
+require 'forwardable'
+
 module SqlLogging
   class Statistics
     class Data

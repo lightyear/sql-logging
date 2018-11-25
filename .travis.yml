@@ -1,24 +1,11 @@
 language: ruby
 
 rvm:
-  - 2.2.3
-  - 2.3.2
   - 2.4.0
+  - 2.5.3
 
 gemfile:
-  - Gemfile.rails40
-  - Gemfile.rails41
-  - Gemfile.rails42
-  - Gemfile.rails50
-  - Gemfile.rails51
-
-matrix:
-  exclude:
-  - rvm: 2.4.0
-    gemfile: Gemfile.rails40
-  - rvm: 2.4.0
-    gemfile: Gemfile.rails41
-  - rvm: 2.4.0
-    gemfile: Gemfile.rails42
+  - Gemfile.rails426
+  - Gemfile.rails521
 
 sudo: false

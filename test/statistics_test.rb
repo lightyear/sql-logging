@@ -23,7 +23,7 @@ module SqlLogging
     end
 
     def test_data
-      data = Statistics.instance_variable_get('@data')
+      data = Statistics.instance_variable_get(:@data)
       assert(data.class, Statistics::Data)
     end
 
