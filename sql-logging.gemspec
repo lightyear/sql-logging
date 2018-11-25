@@ -11,8 +11,8 @@ Gem::Specification.new do |s|
   s.email = 'steve@lightyearsoftware.com'
   s.homepage = 'http://github.com/lightyear/sql-logging'
   s.platform = Gem::Platform::RUBY
-  s.summary = 'Adds SQL analysis and debugging info to Rails 3 apps.'
-  s.description = 'Adds SQL analysis and debugging info to Rails 3 apps.'
+  s.summary = 'SQL analysis and debugging info for Rails'
+  s.description = 'Adds SQL analysis and debugging info to Rails applications.'
   s.files = Dir.glob('lib/**/*').to_a
   s.require_path = 'lib'
   s.has_rdoc = true
@@ -21,5 +21,5 @@ Gem::Specification.new do |s|
   s.add_dependency('rails', '>= 4.0')
 
   s.add_development_dependency('rake')
-  s.add_development_dependency('minitest', '>= 2.11.0')
+  s.add_development_dependency('minitest', '>= 5.8.3')
 end

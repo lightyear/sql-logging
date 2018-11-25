@@ -6,12 +6,12 @@ module SqlLogging
         require "sql-logging/adapters/cache_extension"
         begin
           require "sql-logging/adapters/#{adapter}"
-        rescue LoadError => e
+        rescue LoadError
           Rails.logger.warn "SQL Logging extensions are not available for #{adapter}; functionality will be limited"
         end
       end
     end
-    
+
     initializer 'sql_logging.reset_statistics' do
       ActiveSupport.on_load(:active_record) do
         ActionDispatch::Callbacks.before do

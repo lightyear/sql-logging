@@ -3,9 +3,16 @@ require 'test_helper'
 module SqlLogging
   class ConfigurationTest < TestCase
     def test_configuration_defaults
+      old_logger = Rails.logger
+
+      test_logger = Logger.new(STDOUT)
+      Rails.logger = test_logger
+
       config = Configuration.new
-      assert_equal(config.logger, Rails.logger)
-      assert_equal(config.top_sql_queries, 10)
+      assert_equal(test_logger, config.logger)
+      assert_equal(10, config.top_sql_queries)
+    ensure
+      Rails.logger = old_logger
     end
 
     def test_show_top_sql_queries_allowed_values
