@@ -15,7 +15,6 @@ Gem::Specification.new do |s|
   s.description = 'Adds SQL analysis and debugging info to Rails applications.'
   s.files = Dir.glob('lib/**/*').to_a
   s.require_path = 'lib'
-  s.has_rdoc = true
   s.extra_rdoc_files = ['README.rdoc']
 
   s.add_dependency('rails', '>= 4.0')
